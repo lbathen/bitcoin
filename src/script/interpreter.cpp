@@ -275,6 +275,22 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
             // Note how OP_RESERVED does not count towards the opcode limit.
             if (opcode > OP_16 && ++nOpCount > 201)
                 return set_error(serror, SCRIPT_ERR_OP_COUNT);
+            
+            printf("[%d/%d]: %s\n", pc-script.begin(), script.end()-script.begin(),
+                   GetOpName(opcode));
+            
+            // Print the stack
+            printf("[%d/%d]:\t", pc-script.begin(), script.end()-script.begin());
+            
+            for(int s_idx = 0; s_idx < stack.size(); s_idx++)
+            {
+                for(int v_idx = 0; v_idx < stack.at(s_idx).size(); v_idx++)
+                {
+                    printf("%c",stack.at(s_idx).at(v_idx));
+                }
+                printf("   ");
+            }
+            printf("\n");
 
             if (opcode == OP_CAT ||
                 opcode == OP_SUBSTR ||
@@ -298,6 +314,14 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     return set_error(serror, SCRIPT_ERR_MINIMALDATA);
                 }
                 stack.push_back(vchPushValue);
+                
+                printf("\t|\n");
+                printf("\t---");
+                
+                for (int c = 0; c < vchPushValue.size(); c++)
+                    printf("%c",vchPushValue.at(c));
+                printf("\n");
+                
             } else if (fExec || (OP_IF <= opcode && opcode <= OP_ENDIF))
             switch (opcode)
             {
